@@ -1,0 +1,16 @@
+<%- include('partials/header', { pageTitle: 'Thank You' , activePage: 'contact' }) %>
+
+  <section style="padding: 2rem 1.5rem;">
+    <h1 class="page-title">Thank You</h1>
+    <p>
+      Thank you<% if (name) { %> <strong>
+          <%= name %>
+        </strong>
+        <% } %>
+          for contacting <%= site.companyName %>. We have received your message and will get back to you as soon as
+            possible.
+    </p>
+  </section>
+
+
+  <%- include('partials/footer') %>

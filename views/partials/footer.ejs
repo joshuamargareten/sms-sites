@@ -1,0 +1,76 @@
+</main>
+
+<footer>
+    <div class="footer-inner">
+        <div>
+            <%= site.companyName %>
+        </div>
+
+        <% if (site.address && site.address.line1) { %>
+            <div>
+                <%= site.address.line1 %>
+                    <% if (site.address.line2) { %>
+                        <%= site.address.line2 %>
+                            <% } %>,
+                                <%= site.address.city %>,
+                                    <%= site.address.state %>
+                                        <%= site.address.zip %>,
+                                            <%= site.address.country %>
+            </div>
+            <% } %>
+
+                <div>
+                    Phone:
+                    <% if (site.contactPhone) { %>
+                        <% const tel=formatPhoneE164(site.contactPhone); %>
+                            <% if (tel) { %>
+                                <a href="tel:<%= tel %>">
+                                    <%= formatPhoneNational(site.contactPhone) %>
+                                </a>
+                                <% } else { %>
+                                    <%= site.contactPhone %>
+                                        <% } %>
+                                            <% } %>
+                                                ·
+                                                Email:
+                                                <a href="mailto:<%= site.contactEmail %>">
+                                                    <%= site.contactEmail %>
+                                                </a>
+                </div>
+
+                <% if (site.businessHours) { %>
+                    <div>
+                        Business Hours: <%= site.businessHours %>
+                    </div>
+                    <% } %>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('password-toggle')) {
+            var wrapper = e.target.closest('.password-wrapper');
+            if (!wrapper) return;
+            var input = wrapper.querySelector('.password-input');
+            if (!input) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                e.target.textContent = '🙈';
+                e.target.setAttribute('aria-label', 'Hide password');
+            } else {
+                input.type = 'password';
+                e.target.textContent = '👁';
+                e.target.setAttribute('aria-label', 'Show password');
+            }
+        }
+    });
+</script>
+
+<!-- Quill (simple build) -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.min.js"></script>
+
+</body>
+
+</html>

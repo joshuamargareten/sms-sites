@@ -1,0 +1,126 @@
+<%- include('partials/header', { pageTitle, activePage }) %>
+
+  <section style="padding: 2rem 1.5rem;">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Contact Us</h1>
+         <p>
+          Have questions or need assistance from <strong>
+            <%= site.companyName %>
+          </strong>?
+          Use the form below to reach us. If you provide your mobile number, you can also choose
+          to receive SMS/MMS messages as described in our SMS Terms.
+        </p>
+      </div>
+    </header>
+
+    <div class="two-column">
+      <!-- Left: Contact form -->
+      <div>
+       
+
+        <form action="/contact" method="post">
+          <div class="form-group">
+            <label for="name">Name*</label>
+            <input id="name" name="name" required autocomplete="name">
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email*</label>
+            <input id="email" type="email" name="email" required autocomplete="email">
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Mobile Phone</label>
+            <input id="phone" type="tel" name="phone" autocomplete="tel">
+            <small class="form-text">Providing your mobile number is optional.</small>
+          </div>
+
+          <!-- TCR-required SMS disclaimer block (single paragraph, small text) -->
+          <div class="form-group" style="margin-top: 1rem;">
+            <p style="font-size: 0.8rem; line-height: 1.4; color: #555; margin-bottom: 0.6rem;">
+              By signing up for texts, you consent to receive SMS or MMS messages from
+              <strong>
+                <%= site.companyName %>
+              </strong> at the number provided regarding important updates,
+              service-related information, and communications related to our products and services.
+              Consent is not a condition of purchase. Message and data rates may apply. Msg frequency varies.
+              Unsubscribe at any time by replying "STOP". Reply "HELP" for help. I acknowledge that I have read
+              and agree to the
+              <a href="/sms-terms" target="_blank">SMS Terms and Conditions</a>, which includes our
+              <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
+            </p>
+
+            <div class="checkbox-group">
+              <!-- IMPORTANT: checkbox is NOT required (optional) -->
+              <input type="checkbox" id="sms_consent" name="sms_consent" value="yes">
+              <label for="sms_consent">
+                I would like to receive SMS/MMS messages from <%= site.companyName %> as described above.
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message*</label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-secondary">Send Message</button>
+        </form>
+      </div>
+
+      <!-- Right: Other contact options -->
+      <aside>
+        <h2>Other Ways to Reach Us</h2>
+
+        <p>You can also contact <strong>
+            <%= site.companyName %>
+          </strong> directly using the details below.</p>
+
+        <p>
+          <strong>Phone:</strong><br>
+          <% if (site.contactPhone) { %>
+            <% const tel=formatPhoneE164(site.contactPhone); %>
+              <% if (tel) { %>
+                <a href="tel:<%= tel %>">
+                  <%= formatPhoneNational(site.contactPhone) %>
+                </a>
+                <% } else { %>
+                  <%= site.contactPhone %>
+                    <% } %>
+                      <% } else { %>
+                        Not provided.
+                        <% } %>
+        </p>
+
+        <p>
+          <strong>Email:</strong><br>
+          <a href="mailto:<%= site.contactEmail %>">
+            <%= site.contactEmail %>
+          </a>
+        </p>
+
+        <% if (site.address && site.address.line1) { %>
+          <p>
+            <strong>Address:</strong><br>
+            <%= site.address.line1 %><br>
+              <% if (site.address.line2) { %>
+                <%= site.address.line2 %><br>
+                  <% } %>
+                    <%= site.address.city %>, <%= site.address.state %>
+                        <%= site.address.zip %><br>
+                          <%= site.address.country %>
+          </p>
+          <% } %>
+
+            <% if (site.businessHours) { %>
+              <p>
+                <strong>Business Hours:</strong><br>
+                <%= site.businessHours %>
+              </p>
+              <% } %>
+      </aside>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>

@@ -1,0 +1,27 @@
+<%- include('partials/header', { pageTitle, activePage: null }) %>
+
+<section style="padding: 2.5rem 1.5rem;">
+  <div style="max-width: 960px; margin: 0 auto; text-align: center;">
+    <% if (site.branding && site.branding.logoUrl) { %>
+      <img
+        src="<%= site.branding.logoUrl %>"
+        alt="<%= site.companyName %> logo"
+        style="max-width: 220px; height: auto; margin-bottom: 1rem;"
+      >
+    <% } %>
+
+    <h1 style="font-size: 1.75rem; margin-bottom: 0.75rem; color: var(--dark);">
+      Page not found
+    </h1>
+
+    <p style="max-width: 640px; margin: 0 auto 1.5rem; font-size: 1rem; color: #4b5563;">
+      Oops! The page you are looking for does not exist, was moved, or may have been removed.
+    </p>
+
+    <a href="/" class="btn btn-primary">
+      Return Home
+    </a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

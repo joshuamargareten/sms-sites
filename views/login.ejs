@@ -1,0 +1,43 @@
+<%- include('partials/header', { pageTitle, activePage }) %>
+
+    <section style="padding: 2rem 1.5rem; max-width: 600px; margin: 0 auto;">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">Admin Login</h1>
+                <p class="page-subtitle">
+                    Sign in to manage sites, reseller users, and account users.
+                </p>
+            </div>
+        </header>
+
+        <% if (error) { %>
+            <div style="background:#ffe5e5; color:#b00; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1rem;">
+                <%= error %>
+            </div>
+            <% } %>
+
+                <form action="/login" method="post">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input id="email" type="email" name="email" required autocomplete="username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-wrapper">
+                            <input id="password" name="password" type="password" class="form-control password-input"
+                                autocomplete="current-password" required>
+                            <button type="button" class="password-toggle" aria-label="Show password">👁</button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Log In</button>
+                        <a class="btn btn-outline" style="margin-left: 10px;" href="/forgot-password">
+                            Forgot your password?
+                        </a>
+                    </div>
+                </form>
+    </section>
+
+    <%- include('partials/footer') %>

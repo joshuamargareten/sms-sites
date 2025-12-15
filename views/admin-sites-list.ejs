@@ -1,0 +1,140 @@
+<%- include('partials/header', { pageTitle, activePage }) %>
+
+  <section style="padding: 2rem 1.5rem;">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Sites</h1>
+        <p class="page-subtitle">
+          All customer SMS landing sites with their domains, branding, and DNS status.
+        </p>
+      </div>
+      <div class="actions">
+        <a href="/admin/sites/new" class="btn btn-secondary">
+          + New Site
+        </a>
+      </div>
+    </header>
+
+    <% if (!sites || sites.length===0) { %>
+      <p>No sites found.</p>
+      <% } else { %>
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+            <thead>
+              <tr style="background:#f3f3f3;">
+                <th style="border:1px solid #ddd; padding:0.4rem;">ID</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Domain</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Company</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Email</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Phone</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Primary</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Secondary</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Domain Status</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% sites.forEach(function(s) { %>
+                <tr>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <%= s.id %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <%= s.domain %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <%= s.company_name %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <a href="mailto:<%= s.contact_email %>">
+                      <%= s.contact_email %>
+                    </a>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <%= s.contact_phone %>
+                  </td>
+
+                  <!-- Primary color swatch -->
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <span style="
+                    display:inline-block;
+                    width:14px;
+                    height:14px;
+                    border-radius:50%;
+                    vertical-align:middle;
+                    background: <%= s.primary_color || '#2B3F99' %>;
+                  "></span>
+                    <span style="margin-left:0.25rem;">
+                      <%= s.primary_color || '' %>
+                    </span>
+                  </td>
+
+                  <!-- Secondary color swatch -->
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <span style="
+                    display:inline-block;
+                    width:14px;
+                    height:14px;
+                    border-radius:50%;
+                    vertical-align:middle;
+                    background:<%= s.secondary_color || '#26ABE2' %>;
+                  "></span>
+                    <span style="margin-left:0.25rem;">
+                      <%= s.secondary_color || '' %>
+                    </span>
+                  </td>
+
+                  <!-- Domain status -->
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <% if (s.domain_status==='active' ) { %>
+                      <span style="color: green; font-weight: 600;">Active</span>
+                      <% } else if (s.domain_status==='invalid' ) { %>
+                        <span style="color: #b00; font-weight: 600;">Invalid DNS</span>
+                        <% } else { %>
+                          <span style="color: #c90;">
+                            <%= s.domain_status %>
+                          </span>
+                          <% } %>
+                            <br>
+                            <small>
+                              <% if (s.domain_last_checked_at) { %>
+                                Last checked: <%= s.domain_last_checked_at %>
+                                  <% } else { %>
+                                    Not yet validated
+                                    <% } %>
+                            </small>
+                  </td>
+
+                  <!-- Actions -->
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;" class="table-actions">
+                    <form action="/admin/sites/<%= s.id %>/validate-domain" method="post" style="display:inline;">
+                      <button type="submit" class="btn btn-sm btn-outline" style="margin-right:0.25rem;">
+                        Validate DNS
+                      </button>
+                    </form>
+
+                    <a href="/admin/sites/<%= s.id %>/edit" class="btn btn-sm btn-outline"
+                      style="margin-right:0.25rem;">
+                      Edit
+                    </a>
+
+                    <% if (s.domain !=='localhost' ) { %>
+                      <form action="/admin/sites/<%= s.id %>/delete" method="post" style="display:inline;"
+                        onsubmit="return confirm('Delete site <%= s.domain %>? This cannot be undone.');">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                          Delete
+                        </button>
+                      </form>
+                      <% } else { %>
+                        <span style="color:#999; font-size:0.8rem;">(cannot delete localhost)</span>
+                        <% } %>
+                  </td>
+                </tr>
+                <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+  </section>
+
+  <%- include('partials/footer') %>
