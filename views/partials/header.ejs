@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        <%= (pageTitle ? pageTitle + ' | ' : '' ) + (site && site.companyName ? site.companyName : 'Website' ) %>
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <% if (site && site.branding && site.branding.faviconUrl) { %>
+        <link rel="icon" href="<%= site.branding.faviconUrl %>">
+        <% } %>
+
+            <!-- Bootstrap (optional, for grid/utilities if you use them) -->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+                integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+                crossorigin="anonymous">
+
+            <!-- Main app styles (all layout + components live here) -->
+            <link rel="stylesheet" href="/css/style.css">
+
+            <!-- Dynamic theme colors -->
+            <style>
+                :root {
+                    --primary: <%=site && site.branding && site.branding.primaryColor ? site.branding.primaryColor: '#1b1464' %>;
+                    --secondary: <%=site && site.branding && site.branding.secondaryColor ? site.branding.secondaryColor: '#007dc5' %>;
+                    --dark: <%=site && site.branding && site.branding.darkColor ? site.branding.darkColor: '#282829' %>;
+                    --light: <%=site && site.branding && site.branding.lightColor ? site.branding.lightColor: '#f1f2f2' %>;
+                }
+            </style>
+
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="brand">
+            <% if (site && site.branding && site.branding.logoUrl) { %>
+                <a href="/" class="brand-link">
+                    <img src="<%= site.branding.logoUrl %>" alt="<%= site.companyName || 'Logo' %> logo" class="logo">
+                </a>
+                <% } else if (site && site.companyName) { %>
+                    <a href="/" class="brand-link brand-text">
+                        <%= site.companyName %>
+                    </a>
+                    <% } else { %>
+                        <a href="/" class="brand-link brand-text">
+                            Website
+                        </a>
+                        <% } %>
+        </div>
+
+        <nav class="main-nav">
+            <a href="/" class="<%= activePage === 'home' ? 'active' : '' %>">Home</a>
+            <a href="/privacy-policy" class="<%= activePage === 'privacy' ? 'active' : '' %>">
+                Privacy Policy
+            </a>
+            <a href="/sms-terms" class="<%= activePage === 'sms-terms' ? 'active' : '' %>">
+                SMS Terms
+            </a>
+            <a href="/contact" class="<%= activePage === 'contact' ? 'active' : '' %>">
+                Contact Us
+            </a>
+
+            <% if (currentUser && currentUser.role==='admin' ) { %>
+                <span class="nav-separator">|</span>
+                <a href="/admin/sites" class="<%= activePage === 'admin-sites' ? 'active' : '' %>">
+                    Admin Sites
+                </a>
+                <a href="/admin/forms" class="<%= activePage === 'admin-forms' ? 'active' : '' %>">
+                    Form Submissions
+                </a>
+                <a href="/admin/account-users" class="<%= activePage === 'admin-users' ? 'active' : '' %>">
+                    Account Users
+                </a>
+                <a href="/admin/reseller-users" class="<%= activePage === 'admin-resellers' ? 'active' : '' %>">
+                    Reseller Users
+                </a>
+                <a href="/logout">Logout</a>
+                <% } else if (currentUser) { %>
+                    <span class="nav-separator">|</span>
+                    <a href="/portal" class="<%= activePage === 'portal' ? 'active' : '' %>">
+                        Portal
+                    </a>
+                    <a href="/logout">Logout</a>
+                    <% } %>
+        </nav>
+    </header>
+
+    <main class="site-main">

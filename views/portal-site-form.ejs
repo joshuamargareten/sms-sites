@@ -1,0 +1,381 @@
+<%- include('partials/header', { pageTitle: pageTitle, activePage: activePage }) %>
+
+  <section style="max-width: 960px; margin: 2rem auto; padding: 2rem 1.5rem;">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">My Website Settings</h1>
+        <p class="page-subtitle">
+          Update the content and branding shown on your public SMS landing pages.
+        </p>
+      </div>
+      <div class="actions">
+        <a href="/portal" class="btn btn-outline">Back to portal home</a>
+      </div>
+    </header>
+
+    <% if (!canEdit) { %>
+      <div class="flash flash-info" style="margin-bottom:1.5rem;">
+        You can view your current settings below. To make changes, please reach out to your account admin.
+      </div>
+      <% } %>
+
+        <% if (siteRecord && siteRecord.domain) { %>
+          <div style="
+      margin-bottom: 1.5rem;
+      font-size: .9rem;
+      padding: .6rem .8rem;
+      border-radius: .5rem;
+      background:#f3f4ff;
+      border:1px solid #d4ddff;
+      color:#374151;
+      display:flex;
+      justify-content:space-between;
+      gap:.75rem;
+      flex-wrap:wrap;
+    ">
+            <div>
+              <strong>Domain:</strong>
+              <code><%= siteRecord.domain %></code>
+              <br>
+              <small class="form-text">
+                Point your domain to this platform using a CNAME record:<br>
+                <code><%= siteRecord.domain || 'yourdomain.com' %> CNAME <%= cnameUrl %></code><br>
+                Once DNS is updated, click "Validate DNS".
+              </small>
+            </div>
+            <div>
+              <% if (siteRecord.domain_status==='active' ) { %>
+                <span style="color: green; font-weight: 600;">Active</span>
+                <% } else if (siteRecord.domain_status==='invalid' ) { %>
+                  <span style="color: #b00; font-weight: 600;">Invalid DNS</span>
+                  <% } else { %>
+                    <span style="color: #c90;">
+                      <%= siteRecord.domain_status %>
+                    </span>
+                    <% } %>
+                      <br>
+                      <small>
+                        <% if (siteRecord.domain_last_checked_at) { %>
+                          Last checked: <%= siteRecord.domain_last_checked_at %>
+                            <% } else { %>
+                              Not yet validated
+                              <% } %>
+                      </small>
+            </div>
+            <div>
+              <form action="/portal/sites/<%= siteRecord.id %>/validate-domain" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-outline">Validate DNS</button>
+              </form>
+            </div>
+            <div>
+              <span style="opacity:.8;">
+                This domain was configured by your provider and cannot be changed here.
+              </span>
+            </div>
+          </div>
+          <% } %>
+
+            <form method="POST" action="/portal/site">
+              <fieldset <% if (!canEdit) { %>disabled<% } %>>
+                  <!-- Company name -->
+                  <div class="form-group">
+                    <label for="company_name">Company Name*</label>
+                    <input id="company_name" name="company_name" required value="<%= siteRecord.company_name || '' %>">
+                  </div>
+
+                  <h2>Company Details (shown on homepage)</h2>
+
+                  <!-- Company details + AI helper -->
+                  <div class="form-group">
+                    <label for="company_details">Company Details</label>
+                    <!-- Quill container -->
+                    <div id="company_details_editor" style="height: 200px; background:#fff; border:1px solid #ccc;">
+                    </div>
+
+                    <!-- Hidden input actually posted -->
+                    <input type="hidden" id="company_details" name="company_details"
+                      value="<%- siteRecord.company_details || '' %>">
+                  </div>
+
+                  <% if (canEdit) { %>
+                    <div style="
+          border: 1px solid #e1e4ea;
+          padding: 1rem;
+          border-radius: .5rem;
+          background:#f9fafc;
+          margin-bottom:1.5rem;
+        ">
+                      <div
+                        style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+                        <div>
+                          <strong>Optional: Generate / refine with AI</strong>
+                          <p style="margin:.25rem 0 0; color:#6b7280; font-size:.9rem;">
+                            Describe your business in plain language and we’ll generate properly formatted HTML.
+                          </p>
+                        </div>
+                        <button id="btn-generate-company-details" class="btn btn-secondary btn-sm" type="button">
+                          Generate Company Details with AI
+                        </button>
+                      </div>
+
+                      <div class="form-row" style="margin-top:1rem;">
+                        <div class="form-group" style="flex:2 1 260px;">
+                          <label for="ai_summary">Short business description</label>
+                          <textarea id="ai_summary" rows="3"
+                            placeholder="Example: We are a VoIP and IT provider serving small businesses across the tri-state area."></textarea>
+                        </div>
+                        <div class="form-group" style="flex:1 1 180px;">
+                          <label for="ai_industry">Industry</label>
+                          <input id="ai_industry" placeholder="Example: Telecom / IT services">
+                        </div>
+                        <div class="form-group" style="flex:1 1 180px;">
+                          <label for="ai_area">Region / area served</label>
+                          <input id="ai_area" placeholder="Example: New York, New Jersey, Connecticut">
+                        </div>
+                      </div>
+
+                      <small style="display:block; color:#6b7280; margin-top:.25rem; font-size:.85rem;">
+                        The current HTML is also sent as context so you can safely regenerate or refine.
+                      </small>
+                    </div>
+                    <% } %>
+
+                      <!-- Contact info -->
+                      <div class="form-row">
+                        <div class="form-group" style="flex:1 1 220px;">
+                          <label for="contact_phone">Contact Phone*</label>
+                          <input id="contact_phone" name="contact_phone" required type="tel"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                            value="<%= siteRecord.contact_phone || '' %>">
+                          <small style="display:block; color:#6b7280; margin-top:.25rem;">
+                            Digits only. On the public pages we’ll format it in national style and make it tap-to-call.
+                          </small>
+                        </div>
+
+                        <div class="form-group" style="flex:1 1 260px;">
+                          <label for="contact_email">Contact Email*</label>
+                          <input id="contact_email" type="email" name="contact_email" required
+                            value="<%= siteRecord.contact_email || '' %>">
+                        </div>
+                      </div>
+
+                      <!-- Address -->
+                      <div class="form-row">
+                        <h2>Address (optional)</h2>
+                        <div class="form-group" style="flex:2 1 260px;">
+                          <label for="address_line1">Address Line 1</label>
+                          <input id="address_line1" name="address_line1" value="<%= siteRecord.address_line1 || '' %>">
+                        </div>
+                        <div class="form-group" style="flex:2 1 260px;">
+                          <label for="address_line2">Address Line 2</label>
+                          <input id="address_line2" name="address_line2" value="<%= siteRecord.address_line2 || '' %>">
+                        </div>
+                      </div>
+
+                      <div class="form-row">
+                        <div class="form-group" style="flex:1 1 180px;">
+                          <label for="city">City</label>
+                          <input id="city" name="city" value="<%= siteRecord.city || '' %>">
+                        </div>
+                        <div class="form-group" style="flex:1 1 120px;">
+                          <label for="state">State</label>
+                          <input id="state" name="state" value="<%= siteRecord.state || '' %>">
+                        </div>
+                        <div class="form-group" style="flex:1 1 140px;">
+                          <label for="zip">ZIP</label>
+                          <input id="zip" name="zip" value="<%= siteRecord.zip || '' %>">
+                        </div>
+                        <div class="form-group" style="flex:1 1 160px;">
+                          <label for="country">Country</label>
+                          <input id="country" name="country" value="<%= siteRecord.country || '' %>">
+                        </div>
+                      </div>
+
+                      <!-- Colors -->
+                      <h2>Colors</h2>
+                      <div class="form-group">
+                        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                          <div>
+                            <label for="primary_color" style="font-weight:500;">Primary</label>
+                            <input id="primary_color" name="primary_color" type="color"
+                              style="width: 100px; height: 40px;" value="<%= siteRecord.primary_color || '#2B3F99' %>">
+                          </div>
+                          <div>
+                            <label for="secondary_color" style="font-weight:500;">Secondary</label>
+                            <input id="secondary_color" name="secondary_color" type="color"
+                              style="width: 100px; height: 40px;"
+                              value="<%= siteRecord.secondary_color || '#26ABE2' %>">
+                          </div>
+                          <div>
+                            <label for="dark_color" style="font-weight:500;">Dark</label>
+                            <input id="dark_color" name="dark_color" type="color" style="width: 100px; height: 40px;"
+                              value="<%= siteRecord.dark_color || '#222222' %>">
+                          </div>
+                          <div>
+                            <label for="light_color" style="font-weight:500;">Light</label>
+                            <input id="light_color" name="light_color" type="color" style="width: 100px; height: 40px;"
+                              value="<%= siteRecord.light_color || '#f7f7f7' %>">
+                          </div>
+                        </div>
+                        <small style="display:block; color:#6b7280; margin-top:.25rem;">
+                          Used for buttons, headers, and background accents.
+                        </small>
+                      </div>
+              </fieldset>
+
+              <div class="form-actions">
+                <a href="/portal" class="btn btn-outline">Cancel</a>
+                <% if (canEdit) { %>
+                  <button type="submit" class="btn btn-primary">Save changes</button>
+                  <% } %>
+              </div>
+            </form>
+
+            <br>
+            <br>
+
+            <!-- Logo / favicon (URL based, to match current server.js) -->
+            <fieldset>
+              <h2>Logo and Favicon</h2>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Logo</label>
+                  <% if (siteRecord.logo_url) { %>
+                    <div style="margin-bottom:0.5rem;">
+                      <img src="<%= siteRecord.logo_url %>" alt="Logo" style="max-height:60px; max-width:200px;">
+                    </div>
+                    <% } %>
+                      <% if (canEdit) { %>
+                        <small class="form-text">
+                          Recommended: transparent PNG, around 300×80px.
+                        </small>
+                        <form action="/portal/sites/<%= siteRecord.id %>/upload-logo" method="post"
+                          enctype="multipart/form-data" style="margin-top:0.5rem;">
+                          <input type="file" name="logo_file" accept=".png,.jpg,.jpeg,.svg" required>
+                          <button type="submit" class="btn btn-sm btn-outline">Upload Logo</button>
+                        </form>
+                        <% } %>
+                </div>
+
+                <div class="form-group">
+                  <label>Favicon</label>
+                  <% if (siteRecord.favicon_url) { %>
+                    <div style="margin-bottom:0.5rem;">
+                      <img src="<%= siteRecord.favicon_url %>" alt="Favicon" style="height:32px; width:32px;">
+                    </div>
+                    <% } %>
+                      <% if (canEdit) { %>
+                        <small class="form-text">
+                          Recommended: 32×32 ICO or PNG.
+                        </small>
+                        <form action="/portal/sites/<%= siteRecord.id %>/upload-favicon" method="post"
+                          enctype="multipart/form-data" style="margin-top:0.5rem;">
+                          <input type="file" name="favicon_file" accept=".ico,.png,.jpg,.jpeg,.svg" required>
+                          <button type="submit" class="btn btn-sm btn-outline">Upload Favicon</button>
+                        </form>
+                        <% } %>
+                </div>
+              </div>
+            </fieldset>
+  </section>
+
+  <script>
+    (function () {
+      document.addEventListener('DOMContentLoaded', function () {
+        var editorContainer = document.getElementById('company_details_editor');
+        var hiddenInput = document.getElementById('company_details');
+
+        if (editorContainer && hiddenInput) {
+          var quill = new Quill(editorContainer, {
+            theme: 'snow'
+          });
+
+          // Initialize from existing HTML
+          if (hiddenInput.value) {
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = hiddenInput.value;
+            quill.root.innerHTML = tempDiv.innerHTML;
+          }
+
+          // On submit, move HTML into hidden input
+          var form = editorContainer.closest('form');
+          if (form) {
+            form.addEventListener('submit', function () {
+              hiddenInput.value = quill.root.innerHTML;
+            });
+          }
+
+          var btn = document.getElementById('btn-generate-company-details');
+          if (!btn) return;
+
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+
+            var companyName = document.getElementById('company_name').value || '';
+            var summary = document.getElementById('ai_summary').value || '';
+            var industry = document.getElementById('ai_industry').value || '';
+            var area = document.getElementById('ai_area').value || '';
+            var existing = document.getElementById('company_details').value || '';
+
+            if (!companyName && !summary) {
+              alert('Please enter at least a company name or a short summary.');
+              return;
+            }
+
+            var originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+
+            fetch('/portal/site/generate-details', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+              },
+              body: JSON.stringify({
+                company_name: companyName,
+                summary: summary,
+                industry: industry,
+                area: area,
+                existing: existing
+              })
+            })
+              .then(function (res) {
+                if (!res.ok) {
+                  return res.json().then(function (data) {
+                    console.error('AI error:', data);
+                    alert((data && data.error) || 'Failed to generate description.');
+                  }).catch(function () {
+                    alert('Failed to generate description.');
+                  });
+                }
+                return res.json();
+              })
+              .then(function (data) {
+                if (!data) return;
+                if (data && data.html) {
+                  document.getElementById('company_details').value = data.html;
+                  quill.root.innerHTML = data.html;
+                  alert('Details generated successfully!');
+                } else {
+                  console.error('AI fetch failed');
+                  alert('Could not generate details. Please try again.');
+                }
+              })
+              .catch(function (err) {
+                console.error(err);
+                alert('Error calling AI generator.');
+              })
+              .finally(function () {
+                btn.disabled = false;
+                btn.textContent = originalText;
+              });
+
+          });
+        }
+      });
+
+    })();
+  </script>
+
+  <%- include('partials/footer') %>

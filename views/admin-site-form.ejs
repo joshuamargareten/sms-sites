@@ -1,0 +1,351 @@
+<%- include('partials/header', { pageTitle, activePage }) %>
+
+  <section style="padding: 2rem 1.5rem;">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">
+          <%= isEdit ? 'Edit Site' : 'New Site' %>
+        </h1>
+        <p class="page-subtitle">
+          Configure the domain, company details, and branding used for this customer’s SMS landing pages.
+        </p>
+      </div>
+      <div class="actions">
+        <a href="/admin/sites" class="btn btn-outline">Back to Sites</a>
+      </div>
+    </header>
+
+    <!-- DNS status / validation panel -->
+     <% if (isEdit) { %>
+    <div style="
+    margin-bottom: 1.5rem;
+    font-size: .9rem;
+    padding: .6rem .8rem;
+    border-radius: .5rem;
+    background:#f3f4ff;
+    border:1px solid #d4ddff;
+    color:#374151;
+    display:flex;
+    justify-content:space-between;
+    gap:.75rem;
+    flex-wrap:wrap;
+  ">
+      <div>
+        <% if (siteRecord.domain_status==='active' ) { %>
+          <span style="color: green; font-weight: 600;">Active</span>
+          <% } else if (siteRecord.domain_status==='invalid' ) { %>
+            <span style="color: #b00; font-weight: 600;">Invalid DNS</span>
+            <% } else { %>
+              <span style="color: #c90;">
+                <%= siteRecord.domain_status %>
+              </span>
+              <% } %>
+                <br>
+                <small>
+                  <% if (siteRecord.domain_last_checked_at) { %>
+                    Last checked: <%= siteRecord.domain_last_checked_at %>
+                      <% } else { %>
+                        Not yet validated
+                        <% } %>
+                </small>
+      </div>
+      <div>
+        <form action="/admin/sites/<%= siteRecord.id %>/validate-domain" method="post" style="display:inline;">
+          <button type="submit" class="btn btn-sm btn-outline">Validate DNS</button>
+        </form>
+      </div>
+    </div>
+    <% } %>
+
+    <form method="post"
+      action="<% if (isEdit) { %>/admin/sites/<%= siteRecord.id %>/edit<% } else { %>/admin/sites/new<% } %>">
+      <fieldset>
+        <legend>Basic Info</legend>
+
+        <div class="form-group">
+          <label for="domain">Domain</label>
+          <input id="domain" name="domain" type="text" class="form-control" placeholder="yourdomain.com"
+            value="<%= siteRecord.domain || '' %>" required <% if (isEdit) { %>readonly<% } %>
+            >
+            <small class="form-text">
+              Point your domain to this platform using a CNAME record:<br>
+              <code><%= siteRecord.domain || 'yourdomain.com' %> CNAME <%= cnameUrl %></code><br>
+              Once DNS is updated, click “Validate DNS” above or on the Sites list.
+            </small>
+        </div>
+
+        <div class="form-group">
+          <label for="company_name">Company Name*</label>
+          <input id="company_name" name="company_name" value="<%= siteRecord.company_name || '' %>" required>
+        </div>
+
+        <div class="form-group">
+          <h2>Company Details (shown on homepage)</h2>
+
+          <!-- AI helper panel -->
+          <div class="form-group"
+            style="border: 1px solid #e1e4ea; padding: 1rem; border-radius: .5rem; background:#f9fafc; margin-bottom:1.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+              <div>
+                <strong>Optional: Generate / refine with AI</strong>
+                <p style="margin:.25rem 0 0; color:#6b7280; font-size:.9rem;">
+                  Describe the business in plain language and we’ll generate properly formatted HTML.
+                </p>
+              </div>
+              <button id="btn-generate-details-admin" class="btn btn-secondary btn-sm" type="button">
+                Generate Company Details with AI
+              </button>
+            </div>
+
+            <div class="form-row" style="margin-top:1rem;">
+              <div class="form-group" style="flex:2 1 260px;">
+                <label for="ai_summary_admin">What does the company do? (short summary)</label>
+                <textarea id="ai_summary_admin" class="form-control" rows="3"
+                  placeholder="e.g. We provide business VoIP, contact center, and managed IT services to SMBs."></textarea>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group" style="flex:1; min-width:180px;">
+                  <label for="ai_industry_admin">Industry / vertical</label>
+                  <input id="ai_industry_admin" class="form-control" style="width: 100%;"
+                    placeholder="e.g. Telecom, IT services">
+                </div>
+
+                <div class="form-group" style="flex:1; min-width:180px;">
+                  <label for="ai_area_admin">Service area / region</label>
+                  <input id="ai_area_admin" class="form-control" placeholder="e.g. New York tri-state area">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quill container -->
+          <div id="company_details_editor" style="height: 200px; background:#fff; border:1px solid #ccc;"></div>
+
+          <!-- Hidden input actually posted -->
+          <input type="hidden" id="company_details" name="company_details"
+            value="<%- siteRecord.company_details || '' %>">
+        </div>
+
+        <div class="form-group">
+          <label for="contact_phone">Contact Phone</label>
+          <input id="contact_phone" name="contact_phone" type="tel" class="form-control"
+            value="<%= siteRecord.contact_phone || '' %>" oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+            placeholder="e.g. 2125551234" required>
+          <small class="form-text">
+            Digits only. We will format it automatically on the public site.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="contact_email">Contact Email*</label>
+          <input id="contact_email" type="email" name="contact_email" value="<%= siteRecord.contact_email || '' %>"
+            required>
+        </div>
+
+        <h2>Address (optional)</h2>
+
+        <div class="form-group">
+          <label for="address_line1">Address Line 1</label>
+          <input id="address_line1" name="address_line1" value="<%= siteRecord.address_line1 || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="address_line2">Address Line 2</label>
+          <input id="address_line2" name="address_line2" value="<%= siteRecord.address_line2 || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="city">City</label>
+          <input id="city" name="city" value="<%= siteRecord.city || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="state">State</label>
+          <input id="state" name="state" value="<%= siteRecord.state || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="zip">ZIP</label>
+          <input id="zip" name="zip" value="<%= siteRecord.zip || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="country">Country</label>
+          <input id="country" name="country" value="<%= siteRecord.country || '' %>">
+        </div>
+
+        <div class="form-group">
+          <label for="business_hours">Business Hours</label>
+          <input id="business_hours" name="business_hours" value="<%= siteRecord.business_hours || '' %>">
+        </div>
+
+        <h2>Colors</h2>
+
+        <input type="hidden" id="logo_url" name="logo_url" value="<%= siteRecord.logo_url || '' %>">
+        <input type="hidden" id="favicon_url" name="favicon_url" value="<%= siteRecord.favicon_url || '' %>">
+
+        <div class="form-group">
+          <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <div>
+              <label for="primary_color" style="font-weight:500;">Primary</label>
+              <input id="primary_color" name="primary_color" type="color" style="width: 100px; height: 40px;"
+                value="<%= siteRecord.primary_color || '#2B3F99' %>">
+            </div>
+            <div>
+              <label for="secondary_color" style="font-weight:500;">Secondary</label>
+              <input id="secondary_color" name="secondary_color" type="color" style="width: 100px; height: 40px;"
+                value="<%= siteRecord.secondary_color || '#26ABE2' %>">
+            </div>
+            <div>
+              <label for="dark_color" style="font-weight:500;">Dark</label>
+              <input id="dark_color" name="dark_color" type="color" style="width: 100px; height: 40px;"
+                value="<%= siteRecord.dark_color || '#222222' %>">
+            </div>
+            <div>
+              <label for="light_color" style="font-weight:500;">Light</label>
+              <input id="light_color" name="light_color" type="color" style="width: 100px; height: 40px;"
+                value="<%= siteRecord.light_color || '#f7f7f7' %>">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <%= isEdit ? 'Save Changes' : 'Create Site' %>
+          </button>
+          <a href="/admin/sites" class="btn btn-outline" style="margin-left:0.75rem;">
+            Cancel
+          </a>
+        </div>
+      </fieldset>
+    </form>
+
+    <br>
+
+    <% if (isEdit) { %>
+      <fieldset>
+        <legend>Logo and Favicon</legend>
+
+        <div class="form-group">
+          <label>Logo</label>
+          <% if (siteRecord.logo_url) { %>
+            <div style="margin-bottom:0.5rem;">
+              <img src="<%= siteRecord.logo_url %>" alt="Logo" style="max-height:60px; max-width:200px;">
+            </div>
+            <% } %>
+              <small class="form-text">
+                Recommended: transparent PNG, around 300×80px.
+              </small>
+              <form action="/admin/sites/<%= siteRecord.id %>/upload-logo" method="post" enctype="multipart/form-data"
+                style="margin-top:0.5rem;">
+                <input type="file" name="logo_file" accept=".png,.jpg,.jpeg,.svg" required>
+                <button type="submit" class="btn btn-sm btn-secondary">Upload Logo</button>
+              </form>
+        </div>
+
+        <div class="form-group">
+          <label>Favicon</label>
+          <% if (siteRecord.favicon_url) { %>
+            <div style="margin-bottom:0.5rem;">
+              <img src="<%= siteRecord.favicon_url %>" alt="Favicon" style="height:32px; width:32px;">
+            </div>
+            <% } %>
+              <small class="form-text">
+                Recommended: 32×32 ICO or PNG.
+              </small>
+              <form action="/admin/sites/<%= siteRecord.id %>/upload-favicon" method="post"
+                enctype="multipart/form-data" style="margin-top:0.5rem;">
+                <input type="file" name="favicon_file" accept=".ico,.png,.jpg,.jpeg,.svg" required>
+                <button type="submit" class="btn btn-sm btn-secondary">Upload Favicon</button>
+              </form>
+        </div>
+      </fieldset>
+      <% } %>
+  </section>
+
+  <script>
+    (function () {
+      document.addEventListener('DOMContentLoaded', function () {
+        var editorContainer = document.getElementById('company_details_editor');
+        var hiddenInput = document.getElementById('company_details');
+
+        if (editorContainer && hiddenInput) {
+          var quill = new Quill(editorContainer, {
+            theme: 'snow'
+          });
+
+          // Initialize from existing HTML
+          if (hiddenInput.value) {
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = hiddenInput.value;
+            quill.root.innerHTML = tempDiv.innerHTML;
+          }
+
+          // On submit, move HTML into hidden input
+          var form = editorContainer.closest('form');
+          if (form) {
+            form.addEventListener('submit', function () {
+              hiddenInput.value = quill.root.innerHTML;
+            });
+          }
+
+          const btn = document.getElementById('btn-generate-details-admin');
+          if (!btn) return;
+
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+
+            const companyName = document.getElementById('company_name').value || '';
+            const summary = document.getElementById('ai_summary_admin').value || '';
+            const industry = document.getElementById('ai_industry_admin').value || '';
+            const area = document.getElementById('ai_area_admin').value || '';
+            const existing = document.getElementById('company_details').value || '';
+
+            if (!companyName && !summary) {
+              alert('Please enter at least a company name or a short summary.');
+              return;
+            }
+
+            btn.disabled = true;
+            const originalText = btn.textContent;
+            btn.textContent = 'Generating...';
+
+            try {
+              const resp = await fetch('/admin/sites/generate-details', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                  company_name: companyName,
+                  summary,
+                  industry,
+                  area,
+                  existing
+                })
+              });
+
+              const data = await resp.json();
+              if (!resp.ok) {
+                console.error('AI error:', data);
+                alert(data.error || 'Failed to generate description.');
+                return;
+              }
+
+              if (data.html) {
+                document.getElementById('company_details').value = data.html;
+                quill.root.innerHTML = data.html;
+              } else {
+                alert('No description returned from AI.');
+              }
+            } catch (e) {
+              console.error('AI fetch failed:', e);
+              alert('Error talking to the server while generating description.');
+            } finally {
+              btn.disabled = false;
+              btn.textContent = originalText;
+            }
+          });
+        }
+      });
+    })();
+  </script>
+
+  <%- include('partials/footer') %>

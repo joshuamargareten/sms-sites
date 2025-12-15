@@ -1,0 +1,80 @@
+<%- include('partials/header', { pageTitle, activePage }) %>
+
+<section style="padding: 2rem 1.5rem;">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Reseller Users (Teklink)</h1>
+      <p class="page-subtitle">
+        Internal reseller-level logins with full access to sites and accounts.
+      </p>
+    </div>
+    <div class="actions">
+      <a href="/admin/reseller-users/new" class="btn btn-secondary">
+        + New Reseller User
+      </a>
+    </div>
+  </header>
+
+  <% if (!users || users.length === 0) { %>
+    <p>No reseller users found.</p>
+  <% } else { %>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+        <thead>
+          <tr style="background:#f3f3f3;">
+            <th style="border:1px solid #ddd; padding:0.4rem;">ID</th>
+            <th style="border:1px solid #ddd; padding:0.4rem;">Email</th>
+            <th style="border:1px solid #ddd; padding:0.4rem;">Name</th>
+            <th style="border:1px solid #ddd; padding:0.4rem;">Created</th>
+            <th style="border:1px solid #ddd; padding:0.4rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(function(u) { %>
+            <tr>
+              <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                <%= u.id %>
+              </td>
+              <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                <a href="mailto:<%= u.email %>"><%= u.email %></a>
+              </td>
+              <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                <%= u.name || '' %>
+              </td>
+              <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                <%= (u.created_at || '').slice(0, 16) %>
+              </td>
+              <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                <a
+                  href="/admin/reseller-users/<%= u.id %>/edit"
+                  class="btn btn-sm btn-outline"
+                  style="margin-right:0.5rem;"
+                >
+                  Edit
+                </a>
+                <form
+                  action="/admin/reseller-users/<%= u.id %>/delete"
+                  method="post"
+                  style="display:inline;"
+                  onsubmit="return confirm('Delete reseller user <%= u.email %>?');"
+                >
+                <% if (u.id === 1) { %>
+                  <button type="submit" class="btn btn-sm btn-danger" disabled>
+                    Delete  (Admin)
+                  </button>
+                <% } else { %>
+                  <button type="submit" class="btn btn-sm btn-danger">
+                    Delete
+                  </button>
+                <% } %>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<%- include('partials/footer') %>

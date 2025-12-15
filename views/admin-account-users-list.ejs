@@ -1,0 +1,78 @@
+<%- include('partials/header', { pageTitle, activePage }) %>
+
+  <section style="padding: 2rem 1.5rem;">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Account Users</h1>
+        <p class="page-subtitle">
+          Portal logins linked to customer sites (account admins & users).
+        </p>
+      </div>
+      <div class="actions">
+        <a href="/admin/account-users/new" class="btn btn-secondary">+ New Account User</a>
+      </div>
+    </header>
+
+    <form method="get" action="/admin/account-users" style="margin-bottom:1rem;">
+      <div class="form-group" style="max-width: 320px;">
+        <label for="domain">Filter by domain (optional)</label>
+        <input id="domain" name="domain" value="<%= domainFilter %>" placeholder="e.g. localhost">
+      </div>
+      <button type="submit" class="btn">Apply Filter</button>
+    </form>
+    
+    <% if (!users || users.length===0) { %>
+      <p>No account users found.</p>
+      <% } else { %>
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+            <thead>
+              <tr style="background:#f3f3f3;">
+                <th style="border:1px solid #ddd; padding:0.4rem;">ID</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Email</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Name</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Role</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Site</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Created</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% users.forEach(function(u) { %>
+                <tr>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <%= u.id %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <a href="mailto:<%= u.email %>">
+                      <%= u.email %>
+                    </a>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <%= u.name || '' %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <%= u.role %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <%= u.site_domain || '(none)' %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <%= (u.created_at || '').slice(0, 16) %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <a href="/admin/account-users/<%= u.id %>/edit" class="btn btn-sm btn-outline" style="margin-right:0.5rem;">Edit</a>
+                    <form action="/admin/account-users/<%= u.id %>/delete" method="post" style="display:inline;"
+                      onsubmit="return confirm('Delete user <%= u.email %>?');">
+                      <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+  </section>
+
+  <%- include('partials/footer') %>

@@ -1,0 +1,146 @@
+<%- include('partials/header', { pageTitle: 'SMS Terms & Conditions' , activePage }) %>
+
+  <section style="padding: 2rem 1.5rem;">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">SMS Terms and Conditions</h1>
+        <p>Please read these terms and conditions carefully before subscribing to our SMS/MMS services.</p>
+      </div>
+    </header>
+
+    <h3>SMS/MMS Consent and Terms</h3>
+
+    <p>
+      By providing your mobile phone number to <strong>
+        <%= site.companyName %>
+      </strong>, you consent to
+      receive periodic SMS or MMS messages from us. These messages may include important updates,
+      information, exclusive offers, promotions tailored to your interests, and other communications
+      related to our products and services.
+    </p>
+
+    <h3>Providing Your Telephone Number and Notification Obligations</h3>
+    <p>
+      You affirm that the mobile number you have provided to us is accurate and current. You represent
+      that you are the authorized subscriber or owner of any telephone number you provide. If there are
+      any changes to your contact information, including changes to your telephone numbers, you agree to
+      notify us immediately by sending an email to
+      <a href="mailto:<%= site.contactEmail %>">
+        <%= site.contactEmail %>
+      </a>
+      prior to the effect of the change.
+    </p>
+
+    <h3>Consent to Receive Automated Communications</h3>
+    <p>
+      By voluntarily providing your telephone number(s), you explicitly consent to receive recurring
+      automated text messages from <strong>
+        <%= site.companyName %>
+      </strong> regarding our products,
+      services, offers, promotions, and your relationship with us. You acknowledge that consent to
+      receive these messages is not a condition of purchase. Standard message and data rates may apply.
+    </p>
+
+    <h3>Opt-Out Instructions</h3>
+    <p>
+      To unsubscribe from our SMS/MMS messages at any time, you can text STOP in response to any message
+      you receive from us. Additionally, you can send an email to
+      <a href="mailto:<%= site.contactEmail %>">
+        <%= site.contactEmail %>
+      </a>
+      specifying that you wish to opt out of text messages. You agree to receive a final message
+      confirming your opt-out.
+    </p>
+
+    <h3>Privacy Assurance</h3>
+    <p>
+      Your personal information and phone number will not be shared or sold to third parties. We are
+      committed to safeguarding your privacy and ensuring the confidentiality of your data. Any
+      information collected will be used solely for the purpose of providing you with relevant updates
+      and offers. Your trust is paramount to us, and we take every measure to protect your privacy.
+    </p>
+
+    <h3>Assistance</h3>
+    <p>
+      For help, text "HELP" to the number from which you're receiving messages or email
+      <a href="mailto:<%= site.contactEmail %>">
+        <%= site.contactEmail %>
+      </a>.
+    </p>
+
+    <h3>Carrier Participation</h3>
+    <p>
+      Participating carriers in the United States include AT&amp;T, T-Mobile®, Verizon Wireless, Sprint,
+      Boost, U.S. Cellular®, MetroPCS®, InterOp, Cellcom, C Spire Wireless, Cricket, Virgin Mobile,
+      among others. Not all carriers may support our SMS/MMS service. T-Mobile is not liable for delayed
+      or undelivered messages.
+    </p>
+
+    <h3>Data Collection and Use</h3>
+    <p>
+      In connection with this SMS service, we may collect your mobile phone number, carrier's name, and
+      the date, time, and content of your messages among other information you provide. This information
+      may be used to contact you and to deliver the services you have requested from us.
+    </p>
+
+    <h3>Service Modifications and Termination</h3>
+    <p>
+      By subscribing or using the service, you acknowledge our right to modify or discontinue the service,
+      with or without notice, at any time.
+    </p>
+
+    <h3>Indemnification</h3>
+    <p>
+      You agree to indemnify <strong>
+        <%= site.companyName %>
+      </strong> against any claims, including
+      privacy, tort, or others, arising from your voluntary provision of a telephone number not owned by
+      you, failure to notify us of changes in your telephone number, or related to the Federal Telephone
+      Consumer Protection Act or state law equivalents. You agree to defend and hold us harmless from any
+      claims, losses, liabilities, costs, and expenses (including reasonable attorneys' fees) arising
+      from such issues.
+    </p>
+
+    <h3>Participation Requirements</h3>
+    <p>
+      By participating in this Service, you affirm that you are at least eighteen (18) years of age,
+      possess a wireless device capable of two-way messaging, are a customer of a participating wireless
+      carrier, and have a text messaging service. Compatibility of cell phone models with the service,
+      text messaging capabilities, and service availability may vary by carrier.
+    </p>
+
+    <h3>Miscellaneous</h3>
+    <p>
+      You warrant and represent that you possess all necessary rights, powers, and authority to agree to
+      these terms and perform your obligations hereunder, and that doing so does not conflict with any
+      other agreement to which you are bound. If any provision of these terms is found to be unenforceable
+      or invalid, that provision shall be limited or eliminated to the minimum extent necessary so that
+      these terms shall otherwise remain in full force and effect.
+    </p>
+
+    <p>
+      For questions or concerns, please contact <%= site.companyName %> at
+        <a href="mailto:<%= site.contactEmail %>">
+          <%= site.contactEmail %>
+        </a>
+        or by phone at <% if (site.contactPhone) { %>
+          <% const tel=formatPhoneE164(site.contactPhone); %>
+            <% if (tel) { %>
+              <a href="tel:<%= tel %>">
+                <%= formatPhoneNational(site.contactPhone) %>
+              </a>
+              <% } else { %>
+                <%= site.contactPhone %>
+                  <% } %>
+                    <% } %>.
+    </p>
+
+
+    <p>
+      Note: While <%= site.companyName %> does not charge for text messages you receive, your mobile
+        provider's standard rates for text and data may apply. Contact your wireless provider for
+        information about your text and data plan.
+    </p>
+  </section>
+
+  <%- include('partials/footer') %>

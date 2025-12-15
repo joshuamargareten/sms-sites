@@ -1,0 +1,94 @@
+<%- include('partials/header', { pageTitle, activePage }) %>
+
+  <section style="padding: 2rem 1.5rem; max-width: 560px; margin: 0 auto;">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">
+          <%= isEdit ? 'Edit Account User' : 'New Account User' %>
+        </h1>
+        <p class="page-subtitle">
+          Account users have limited access to this portal (only their linked sites and accounts).
+        </p>
+      </div>
+    </header>
+
+
+    <% if (error) { %>
+      <div style="background:#ffe5e5; color:#b00; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1rem;">
+        <%= error %>
+      </div>
+      <% } %>
+
+        <form method="post"
+          action="<% if (isEdit) { %>/admin/account-users/<%= userRecord.id %>/edit<% } else { %>/admin/account-users/new<% } %>">
+
+          <div class="form-group">
+            <label for="email">Email*</label>
+            <input id="email" type="email" name="email" class="form-control" value="<%= userRecord.email || '' %>" <% if
+              (isEdit) { %>readonly<% } %>
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input id="name" name="name" class="form-control" value="<%= userRecord.name || '' %>">
+          </div>
+
+          <div class="form-group">
+            <label for="role">Role</label>
+            <div class="select-wrapper">
+              <select id="role" name="role" class="form-control">
+                <option value="account_user" <%=userRecord.role==='account_user' ? 'selected' : '' %>>
+                  Account User
+                </option>
+                <option value="account_admin" <%=userRecord.role==='account_admin' ? 'selected' : '' %>>
+                  Account Admin
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="site_id">Site</label>
+            <div class="select-wrapper">
+              <select id="site_id" name="site_id" class="form-control">
+                <option value="">— No site / Not yet linked —</option>
+                <% sites.forEach(function(site) { %>
+                  <option value="<%= site.id %>" <%=String(userRecord.site_id || '' )===String(site.id) ? 'selected'
+                    : '' %>>
+                    <%= site.domain %>
+                  </option>
+                  <% }) %>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">
+              <%= isEdit ? 'New Password (leave blank to keep current)'
+                : 'Password (optional – leave blank to send an invite email)' %>
+            </label>
+            <div class="password-wrapper">
+              <input id="password" name="password" type="password" class="form-control password-input"
+                autocomplete="new-password">
+              <button type="button" class="password-toggle" aria-label="Show password">👁</button>
+            </div>
+            <% if (!isEdit) { %>
+              <small class="form-text">
+                If you leave this blank, the user will receive an email invitation with a link to set their password.
+              </small>
+              <% } %>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <%= isEdit ? 'Save Changes' : 'Create User' %>
+            </button>
+            <a href="/admin/account-users" class="btn btn-outline" style="margin-left:0.75rem;">
+              Cancel
+            </a>
+          </div>
+        </form>
+  </section>
+
+  <%- include('partials/footer') %>

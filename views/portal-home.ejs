@@ -1,0 +1,99 @@
+<%- include('partials/header', { pageTitle: pageTitle, activePage: activePage }) %>
+
+  <div class="container narrow" style="padding: 2rem 1.5rem;">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Account Portal</h1>
+        <% if (siteInfo) { %>
+          <p class="page-subtitle">
+            Manage the public website and contact form for
+            <strong>
+              <%= siteInfo.company_name || siteInfo.domain %>
+            </strong>.
+          </p>
+          <% } else { %>
+            <p class="page-subtitle">
+              Your login is not yet linked to a website. Please contact your provider to complete setup.
+            </p>
+            <% } %>
+      </div>
+    </header>
+
+    <% if (siteInfo) { %>
+      <section style="
+      border: 1px solid #e1e4ea;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      margin-bottom: 1.5rem;
+    ">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; align-items:center;">
+          <div>
+            <h2 style="margin:0 0 .25rem;">Website</h2>
+            <p style="margin:0; color:#6b7280; font-size:.9rem;">
+              Domain: <code><%= siteInfo.domain %></code>
+            </p>
+
+            <% if (siteInfo.domain_status) { %>
+              <p style="margin:0.35rem 0 0; font-size:0.85rem;">
+                <% if (siteInfo.domain_status==='active' ) { %>
+                  <span style="color: #16a34a; font-weight:600;">Active</span>
+                  <% } else if (siteInfo.domain_status==='invalid' ) { %>
+                    <span style="color: #b91c1c; font-weight:600;">Invalid DNS</span>
+                    <% } else { %>
+                      <span style="color: #b45309; font-weight:600;">
+                        <%= siteInfo.domain_status %>
+                      </span>
+                      <% } %>
+
+                        <% if (siteInfo.domain_last_checked_at) { %>
+                          <span style="color:#6b7280;">
+                            · Last checked: <%= siteInfo.domain_last_checked_at %>
+                          </span>
+                          <% } %>
+              </p>
+              <% } %>
+          </div>
+
+          <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+            <% if (siteInfo.domain) { %>
+              <a href="https://<%= siteInfo.domain %>" target="_blank" rel="noopener" class="btn btn-secondary">
+                View live site
+              </a>
+              <% } %>
+
+                <a href="/portal/forms" class="btn btn-outline">
+                  View contact form submissions
+                </a>
+
+                <% if (canEdit) { %>
+                  <a href="/portal/site" class="btn btn-primary">
+                    Edit site content &amp; branding
+                  </a>
+                  <% } else { %>
+                    <a href="/portal/site" class="btn btn-primary">
+                      View site content &amp; branding
+                    </a>
+                    <% } %>
+          </div>
+        </div>
+      </section>
+
+      <section style="
+      border: 1px solid #e1e4ea;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    ">
+        <h2 style="margin-top:0;">What you can do here</h2>
+        <ul style="margin:.5rem 0 0; padding-left:1.1rem; color:#4b5563; font-size:.95rem;">
+          <li>Update website text, colors, and contact details used for SMS compliance.</li>
+          <li>Review contact form submissions from visitors.</li>
+        </ul>
+      </section>
+      <% } %>
+  </div>
+
+  <%- include('partials/footer') %>

@@ -1,0 +1,93 @@
+<%- include('partials/header', { pageTitle: pageTitle, activePage: activePage }) %>
+
+  <section style="margin: 2rem auto; padding: 2rem 1.5rem;">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Contact Form Submissions</h1>
+        <% if (siteInfo) { %>
+          <p class="page-subtitle">
+            For site <code><%= siteInfo.domain %></code>
+          </p>
+          <% } %>
+      </div>
+      <div class="actions">
+        <a href="/portal" class="btn btn-outline">Back to portal home</a>
+      </div>
+    </header>
+
+    <% if (!submissions || !submissions.length) { %>
+      <p>No submissions found yet.</p>
+      <% } else { %>
+        <div class="table-wrapper">
+          <table class="forms-table" style="width:100%; border-collapse: collapse; font-size: 0.9rem;">
+            <thead>
+              <tr style="background:#f3f3f3;">
+                <th style="border:1px solid #ddd; padding:0.4rem;">Received</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Name</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Email</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Phone</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">Message</th>
+                <th style="border:1px solid #ddd; padding:0.4rem;">SMS Consent</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% submissions.forEach(function(form) { %>
+                <tr>
+                  <td style="border:1px solid #eee; padding:0.4rem; white-space:nowrap;">
+                    <%= (form.created_at || '' ).slice(0, 16) %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem;">
+                    <%= form.name || '' %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem;">
+                    <% if (form.email) { %>
+                      <a href="mailto:<%= form.email %>">
+                        <%= form.email %>
+                      </a>
+                      <% } %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem;">
+                    <% if (form.phone) { %>
+                      <% const tel=typeof formatPhoneE164 !=='undefined' ? formatPhoneE164(form.phone) : null; %>
+                        <% if (tel) { %>
+                          <a href="tel:<%= tel %>">
+                            <%= typeof formatPhoneNational !=='undefined' ? formatPhoneNational(form.phone) : form.phone
+                              %>
+                          </a>
+                          <% } else { %>
+                            <%= form.phone %>
+                              <% } %>
+                                <% } %>
+                  </td>
+                  <td
+                    style="border:1px solid #eee; padding:0.4rem; max-width: 360px; white-space: pre-line; word-break: break-word;">
+                    <%= form.message || '' %>
+                  </td>
+                  <td style="border:1px solid #eee; padding:0.4rem;">
+                    <% if (form.sms_consent) { %>
+                      <span style="
+                    display:inline-flex;
+                    align-items:center;
+                    gap:.25rem;
+                    font-size:.85rem;
+                    padding:.15rem .45rem;
+                    border-radius:999px;
+                    background:#e3f5e7;
+                    color:#166534;
+                  ">
+                        <span style="width:6px;height:6px;border-radius:50%;background:#16a34a;"></span>
+                        Yes
+                      </span>
+                      <% } else { %>
+                        <span style="font-size:.85rem; color:#9ca3af;">No</span>
+                        <% } %>
+                  </td>
+                </tr>
+                <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+  </section>
+
+  <%- include('partials/footer') %>
