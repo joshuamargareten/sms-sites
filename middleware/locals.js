@@ -27,10 +27,34 @@ function formatPhoneNational(raw) {
     return `(${area}) ${prefix}-${line}`;
 }
 
+// ------------------------------
+// Host/domain normalization
+// - lowercases
+// - strips port (just in case)
+// - strips trailing dot
+// - strips leading "www."
+// ------------------------------
+function normalizeHost(rawHost) {
+  if (!rawHost) return '';
+  let host = String(rawHost).trim().toLowerCase();
+
+  // strip port if present (rare with req.hostname, but safe)
+  host = host.split(':')[0];
+
+  // strip trailing dot (some DNS setups)
+  host = host.replace(/\.$/, '');
+
+  // ignore leading www.
+  host = host.replace(/^www\./, '');
+
+  return host;
+}
+
 module.exports = function localsMiddleware(req, res, next) {
     res.locals.formatPhoneE164 = formatPhoneE164;
     res.locals.formatPhoneNational = formatPhoneNational;
-
+    res.locals.normalizeHost = normalizeHost;
+    
     // Flash: expose once then clear
     res.locals.flash = req.session && req.session.flash ? req.session.flash : null;
     if (req.session && req.session.flash) delete req.session.flash;

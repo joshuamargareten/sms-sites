@@ -6,9 +6,14 @@
 const { db, mapRowToSite } = require('../db');
 
 module.exports = function siteResolverMiddleware(req, res, next) {
-    const host = (req.hostname || '').toLowerCase();
+    const requestHost = (req.hostname || '').toLowerCase();
+    const lookupHost = res.locals.normalizeHost(requestHost);
 
-    db.get('SELECT * FROM sites WHERE domain = ?', [host], (err, row) => {
+    // Keep both available if you ever need them in templates/logs
+    res.locals.requestHost = requestHost; // e.g. "www.customer.com"
+    res.locals.lookupHost = lookupHost;   // e.g. "customer.com"
+
+    db.get('SELECT * FROM sites WHERE domain = ?', [lookupHost], (err, row) => {
         if (err) {
             console.error('DB error loading site:', err);
             return next(err);

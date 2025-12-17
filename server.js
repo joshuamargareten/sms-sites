@@ -12,8 +12,9 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
 
-const { initDb } = require('./db');
+const { initDb, db } = require('./db');
 const { attachCurrentUser } = require('./auth');
 const { SESSION_SECRET, PORT } = require('./config/appConfig');
 
@@ -42,13 +43,37 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ---- Session ----
+// app.use(
+//   session({
+//     secret: SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false
+//   })
+// );
+
+// If behind a proxy (e.g. Caddy), trust first proxy
+app.set('trust proxy', 1);
+
+// Reconfigure session to use SQLite store
 app.use(
   session({
+    store: new SQLiteStore({
+      // you can keep this next to your app or in a subfolder
+      db: 'sessions.sqlite',
+      dir: __dirname
+    }),
     secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    proxy: true,
+    cookie: {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    }
   })
 );
+
 
 // ---- Locals helpers (phone formatting, flash, etc.) ----
 app.use(localsMiddleware);
@@ -75,16 +100,35 @@ app.use(portalRoutes);
 // Return 200 to allow cert issuance, 403 to deny.
 // ------------------------------------------------------------
 app.get('/caddy-ask', (req, res) => {
-  const domain = String(req.query.domain || '').trim().toLowerCase();
+  const token = String(req.query.token || '').trim();
+  const expected = process.env.CADDY_ASK_TOKEN || '';
 
+  // Require token (prevents abuse)
+  if (!expected || token !== expected) {
+    return res.status(403).send('forbidden');
+  }
+
+  let domain = String(req.query.domain || '').trim().toLowerCase();
   if (!domain) return res.status(400).send('missing domain');
 
-  // Safety: never issue certs for localhost, and basic sanity check
+  // Strip :port if Caddy ever includes it
+  domain = domain.split(':')[0];
+
+  // Ignore www. so www.customer.com works
+  if (domain.startsWith('www.')) domain = domain.slice(4);
+
+  // Deny localhost
   if (domain === 'localhost') return res.status(403).send('denied');
+
+  // Deny IPs (Let's Encrypt won't issue certs for IPs)
+  const isIPv4 = /^\d{1,3}(\.\d{1,3}){3}$/.test(domain);
+  if (isIPv4) return res.status(403).send('denied');
+
+  // Basic sanity check
   if (!/^[a-z0-9.-]+$/.test(domain)) return res.status(403).send('denied');
 
-  // Allow only domains that exist in the DB (you can tighten to only 'active' later if you want)
-  db.get('SELECT id FROM sites WHERE domain = ?', [domain], (err, row) => {
+  // Allow only domains that exist in the DB
+  db.get('SELECT id FROM sites WHERE domain = ? LIMIT 1', [domain], (err, row) => {
     if (err) {
       console.error('caddy-ask DB error:', err);
       return res.status(500).send('error');
@@ -100,6 +144,6 @@ app.use(notFoundRoutes);
 
 // ---- Start ----
 console.log('DEBUG: process.env.PORT =', process.env.PORT);
-app.listen(PORT, () => {
+app.listen(PORT, '127.0.0.1', () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });
