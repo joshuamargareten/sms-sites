@@ -23,11 +23,12 @@ router.get('/contact', (req, res) =>
 );
 
 router.post('/contact', (req, res) => {
-    const { name, email, phone, message, sms_consent } = req.body;
+    const { name, email, phone, message, sms_consent, consent_contact } = req.body;
     const site = res.locals.site;
-    const host = req.hostname.toLowerCase();
+    const host = res.locals.lookupHost || req.hostname.toLowerCase();
 
     const consentFlag = sms_consent === 'yes' ? 1 : 0;
+    const contactConsent = consent_contact === 'yes' ? 1 : 0;
     const createdAt = new Date().toISOString();
 
     const formData = {
@@ -37,6 +38,7 @@ router.post('/contact', (req, res) => {
         phone: phone && phone.trim(),
         message: message && message.trim(),
         sms_consent: consentFlag,
+        contact_consent: contactConsent,
         created_at: createdAt
     };
 
@@ -88,6 +90,9 @@ router.post('/contact', (req, res) => {
     });
 });
 
-router.get('/health', (req, res) => res.send('OK'));
+router.get('/health', (req, res) => {
+  res.set('X-Sms-Sites', '1');
+  res.type('text').send('OK');
+});
 
 module.exports = router;
