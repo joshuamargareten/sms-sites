@@ -7,6 +7,7 @@ const router = express.Router();
 
 const { db } = require('../db');
 const { sendContactEmail } = require('../mailer');
+const spamGuard = require('../services/spamGuard');
 
 router.get('/', (req, res) => res.render('home', { pageTitle: 'Home', activePage: 'home' }));
 
@@ -19,13 +20,44 @@ router.get('/sms-terms', (req, res) =>
 );
 
 router.get('/contact', (req, res) =>
-    res.render('contact', { pageTitle: 'Contact Us', activePage: 'contact' })
+    res.render('contact', {
+        pageTitle: 'Contact Us',
+        activePage: 'contact',
+        formToken: spamGuard.createFormToken(),
+        honeypotField: spamGuard.HONEYPOT_FIELD
+    })
 );
 
 router.post('/contact', (req, res) => {
     const { name, email, phone, message, sms_consent, consent_contact } = req.body;
     const site = res.locals.site;
     const host = res.locals.lookupHost || req.hostname.toLowerCase();
+
+    // --- Spam protection ---------------------------------------------------
+    if (spamGuard.isRateLimited(req.ip)) {
+        console.warn(`[spam] rate-limited ip=${req.ip} host=${host}`);
+        return res
+            .status(429)
+            .send('Too many submissions from your network. Please try again in an hour, or contact us by phone or email.');
+    }
+
+    const spamReason = spamGuard.checkSubmission(req.body);
+    if (spamReason) {
+        console.warn(`[spam] blocked reason=${spamReason} ip=${req.ip} host=${host}`);
+        // A real visitor can hit these (page left open for a day, or opened before an update).
+        if (spamReason === 'expired' || spamReason === 'missing-token') {
+            return res
+                .status(400)
+                .send('This form has expired. Please go back, refresh the page, and submit again.');
+        }
+        // Show the normal thank-you page so bots get no signal; nothing is saved or emailed.
+        return res.render('thank-you', {
+            name: (name && name.trim()) || '',
+            pageTitle: 'Thank You',
+            activePage: 'contact'
+        });
+    }
+    // -----------------------------------------------------------------------
 
     const consentFlag = sms_consent === 'yes' ? 1 : 0;
     const consentContact = consent_contact === 'yes' ? 1 : 0;
