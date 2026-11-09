@@ -11,12 +11,7 @@
     <h3>SMS/MMS Consent and Terms</h3>
 
     <p>
-      By providing your mobile phone number to <strong>
-        <%= site.companyName %>
-      </strong>, you consent to
-      receive periodic SMS or MMS messages from us. These messages may include important updates,
-      information, and other communications
-      related to our products and services.
+      By opting in to receive SMS or MMS messages from <strong><%= site.companyName %></strong>, you consent to receive messages at the number provided regarding important updates, service-related information, and communications related to our products and services. Message frequency varies.
     </p>
 
     <h3>Providing Your Telephone Number and Notification Obligations</h3>
@@ -25,19 +20,14 @@
       that you are the authorized subscriber or owner of any telephone number you provide. If there are
       any changes to your contact information, including changes to your telephone numbers, you agree to
       notify us immediately by sending an email to
-      <a href="mailto:<%= site.contactEmail %>">
-        <%= site.contactEmail %>
-      </a>
+      <a href="mailto:<%= site.contactEmail %>"><%= site.contactEmail %></a>
       prior to the effect of the change.
     </p>
 
     <h3>Consent to Receive Automated Communications</h3>
     <p>
-      By voluntarily providing your telephone number(s), you explicitly consent to receive recurring
-      automated text messages from <strong>
-        <%= site.companyName %>
-      </strong> regarding our products,
-      services, offers, promotions, and your relationship with us. You acknowledge that consent to
+      By opting in to receive SMS or MMS messages, you explicitly consent to receive recurring
+      automated text messages from <strong><%= site.companyName %></strong> regarding important updates, service-related information, and communications related to our products and services. You acknowledge that consent to
       receive these messages is not a condition of purchase. Standard message and data rates may apply.
     </p>
 
@@ -45,9 +35,7 @@
     <p>
       To unsubscribe from our SMS/MMS messages at any time, you can text STOP in response to any message
       you receive from us. Additionally, you can send an email to
-      <a href="mailto:<%= site.contactEmail %>">
-        <%= site.contactEmail %>
-      </a>
+      <a href="mailto:<%= site.contactEmail %>"><%= site.contactEmail %></a>
       specifying that you wish to opt out of text messages. You agree to receive a final message
       confirming your opt-out.
     </p>
@@ -56,16 +44,13 @@
     <p>
       Your personal information and phone number will not be shared or sold to third parties. We are
       committed to safeguarding your privacy and ensuring the confidentiality of your data. Any
-      information collected will be used solely for the purpose of providing you with relevant updates
-      and offers. Your trust is paramount to us, and we take every measure to protect your privacy.
+      information collected will be used solely for the purpose of providing you with the communications you opted in to receive. Your trust is paramount to us, and we take every measure to protect your privacy.
     </p>
 
     <h3>Assistance</h3>
     <p>
       For help, text "HELP" to the number from which you're receiving messages or email
-      <a href="mailto:<%= site.contactEmail %>">
-        <%= site.contactEmail %>
-      </a>.
+      <a href="mailto:<%= site.contactEmail %>"><%= site.contactEmail %></a>.
     </p>
 
     <h3>Carrier Participation</h3>
@@ -91,9 +76,7 @@
 
     <h3>Indemnification</h3>
     <p>
-      You agree to indemnify <strong>
-        <%= site.companyName %>
-      </strong> against any claims, including
+      You agree to indemnify <strong><%= site.companyName %></strong> against any claims, including
       privacy, tort, or others, arising from your voluntary provision of a telephone number not owned by
       you, failure to notify us of changes in your telephone number, or related to the Federal Telephone
       Consumer Protection Act or state law equivalents. You agree to defend and hold us harmless from any
@@ -120,19 +103,12 @@
 
     <p>
       For questions or concerns, please contact <%= site.companyName %> at
-        <a href="mailto:<%= site.contactEmail %>">
-          <%= site.contactEmail %>
-        </a>
+        <a href="mailto:<%= site.contactEmail %>"><%= site.contactEmail %></a>
         or by phone at <% if (site.contactPhone) { %>
           <% const tel=formatPhoneE164(site.contactPhone); %>
             <% if (tel) { %>
-              <a href="tel:<%= tel %>">
-                <%= formatPhoneNational(site.contactPhone) %>
-              </a>
-              <% } else { %>
-                <%= site.contactPhone %>
-                  <% } %>
-                    <% } %>.
+              <a href="tel:<%= tel %>"><%= formatPhoneNational(site.contactPhone) %></a><% } else { %>
+                <%= site.contactPhone %><% } %><% } %>.
     </p>
 
 

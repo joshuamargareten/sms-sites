@@ -40,9 +40,7 @@
                     <img src="<%= site.branding.logoUrl %>" alt="<%= site.companyName || 'Logo' %> logo" class="logo">
                 </a>
                 <% } else if (site && site.companyName) { %>
-                    <a href="/" class="brand-link brand-text">
-                        <%= site.companyName %>
-                    </a>
+                    <a href="/" class="brand-link brand-text"><%= site.companyName %></a>
                     <% } else { %>
                         <a href="/" class="brand-link brand-text">
                             Website

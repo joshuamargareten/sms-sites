@@ -35,7 +35,7 @@ function sendContactEmail({ site, form }) {
 
   const subject = `New contact form submission – ${brandName}`;
   const smsText = form.sms_consent ? 'YES' : 'NO';
-  const contactText = form.contact_consent ? 'YES' : 'NO';
+  const contactConsent = form.consent_contact ? 'YES' : 'NO';
 
   const textBody = [
     `You have received a new contact form submission for ${brandName}.`,
@@ -49,7 +49,7 @@ function sendContactEmail({ site, form }) {
     '',
     `SMS consent: ${smsText}`,
     '',
-    `Contact consent: ${contactText}`,
+    `Email/Phone consent: ${contactConsent}`,
     '',
     `Submitted at: ${form.created_at}`,
     `Site/domain: ${form.site_domain}`
@@ -93,8 +93,8 @@ function sendContactEmail({ site, form }) {
           <td>${smsText}</td>
         </tr>
         <tr>
-          <td style="font-weight:bold; padding-right:8px;">Contact consent:</td>
-          <td>${contactText}</td>
+          <td style="font-weight:bold; padding-right:8px;">Email/Phone consent:</td>
+          <td>${contactConsent}</td>
         </tr>
         <tr>
           <td style="font-weight:bold; padding-right:8px;">Submitted at:</td>

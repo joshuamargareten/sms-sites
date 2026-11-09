@@ -1,0 +1,38 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Never runs in forks; secrets are never given to fork pull requests.
+    if: github.repository == 'joshuamargareten/sms-sites'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Deploy to server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          if [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_KEY" ] || [ -z "$DEPLOY_KNOWN_HOSTS" ]; then
+            echo "Deploy secrets are not set yet - skipping."
+            exit 0
+          fi
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # The server key is restricted to running scripts/deploy.sh only.
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "ubuntu@${DEPLOY_HOST}" deploy

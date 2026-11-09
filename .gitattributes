@@ -1,0 +1,8 @@
+# Store text files with LF line endings, whatever OS they were edited on
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.png binary
+*.ico binary
+*.otf binary
+*.sqlite binary

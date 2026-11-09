@@ -24,18 +24,14 @@
                     <% if (site.contactPhone) { %>
                         <% const tel=formatPhoneE164(site.contactPhone); %>
                             <% if (tel) { %>
-                                <a href="tel:<%= tel %>">
-                                    <%= formatPhoneNational(site.contactPhone) %>
-                                </a>
+                                <a href="tel:<%= tel %>"><%= formatPhoneNational(site.contactPhone) %></a>
                                 <% } else { %>
                                     <%= site.contactPhone %>
                                         <% } %>
                                             <% } %>
                                                 ·
                                                 Email:
-                                                <a href="mailto:<%= site.contactEmail %>">
-                                                    <%= site.contactEmail %>
-                                                </a>
+                                                <a href="mailto:<%= site.contactEmail %>"><%= site.contactEmail %></a>
                 </div>
 
                 <% if (site.businessHours) { %>

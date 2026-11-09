@@ -28,7 +28,7 @@ router.post('/contact', (req, res) => {
     const host = res.locals.lookupHost || req.hostname.toLowerCase();
 
     const consentFlag = sms_consent === 'yes' ? 1 : 0;
-    const contactConsent = consent_contact === 'yes' ? 1 : 0;
+    const consentContact = consent_contact === 'yes' ? 1 : 0;
     const createdAt = new Date().toISOString();
 
     const formData = {
@@ -38,7 +38,7 @@ router.post('/contact', (req, res) => {
         phone: phone && phone.trim(),
         message: message && message.trim(),
         sms_consent: consentFlag,
-        contact_consent: contactConsent,
+        consent_contact: consentContact,
         created_at: createdAt
     };
 

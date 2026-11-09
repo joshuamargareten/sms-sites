@@ -14,7 +14,7 @@ const router = express.Router();
 const { db } = require('../db');
 const { requireAdminSession } = require('../auth');
 const { upload } = require('../services/upload');
-const { checkDnsCname, checkHttpsHealth, EXPECTED_CNAME_TARGET } = require('../services/domainValidation');
+const { checkDnsTarget, checkHttpsHealth, EXPECTED_CNAME_TARGET } = require('../services/domainValidation');
 const { generateCompanyDetailsHTML } = require('../services/ai');
 const { CNAME_URL } = require('../config/appConfig');
 
@@ -322,7 +322,7 @@ router.post('/admin/sites/:id/validate-domain', requireAdminSession, async (req,
 
         try {
             // 1) DNS check
-            const dnsResult = await checkDnsCname(domain);
+            const dnsResult = await checkDnsTarget(domain);
 
             if (!dnsResult.ok) {
                 db.run('UPDATE sites SET domain_status = ? WHERE id = ?', ['dns_error', id], () => {

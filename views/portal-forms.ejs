@@ -41,19 +41,15 @@
                   </td>
                   <td style="border:1px solid #eee; padding:0.4rem;">
                     <% if (form.email) { %>
-                      <a href="mailto:<%= form.email %>">
-                        <%= form.email %>
-                      </a>
+                      <a href="mailto:<%= form.email %>"><%= form.email %></a>
                       <% } %>
                   </td>
                   <td style="border:1px solid #eee; padding:0.4rem;">
                     <% if (form.phone) { %>
                       <% const tel=typeof formatPhoneE164 !=='undefined' ? formatPhoneE164(form.phone) : null; %>
                         <% if (tel) { %>
-                          <a href="tel:<%= tel %>">
-                            <%= typeof formatPhoneNational !=='undefined' ? formatPhoneNational(form.phone) : form.phone
-                              %>
-                          </a>
+                          <a href="tel:<%= tel %>"><%= typeof formatPhoneNational !=='undefined' ? formatPhoneNational(form.phone) : form.phone
+                              %></a>
                           <% } else { %>
                             <%= form.phone %>
                               <% } %>

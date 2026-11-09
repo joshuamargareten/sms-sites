@@ -20,12 +20,6 @@
     <p>We collect information when you:</p>
     <ul>
       <li>
-        Send the first message to our listed phone numbers from our website, print ads, yard signs,
-        business cards, or other marketing materials. Upon receiving your message, we send a consent
-        request, including our terms and opt-out instructions.
-      </li>
-      <li>Send a message containing the 'START' keyword to opt in.</li>
-      <li>
         Complete an online form on our website, explicitly consenting to receive messages.
       </li>
     </ul>
@@ -70,9 +64,7 @@
     <p>
       You have control over the information you provide and can opt out of SMS/MMS communications at any
       time by replying "STOP." For assistance, reply "HELP" or contact us at
-      <a href="mailto:<%= site.contactEmail %>">
-        <%= site.contactEmail %>
-      </a>.
+      <a href="mailto:<%= site.contactEmail %>"><%= site.contactEmail %></a>.
     </p>
 
     <h2>9. How Do We Share Your Mobile Information?</h2>
@@ -86,16 +78,12 @@
 
     <p>
       For any questions or concerns regarding this Privacy Policy, please contact us at
-      <a href="mailto:<%= site.contactEmail %>">
-        <%= site.contactEmail %>
-      </a>
+      <a href="mailto:<%= site.contactEmail %>"><%= site.contactEmail %></a>
       or at
       <% if (site.contactPhone) { %>
         <% const tel=formatPhoneE164(site.contactPhone); %>
           <% if (tel) { %>
-            <a href="tel:<%= tel %>">
-              <%= formatPhoneNational(site.contactPhone) %>
-            </a>.
+            <a href="tel:<%= tel %>"><%= formatPhoneNational(site.contactPhone) %></a>.
             <% } else { %>
               <%= site.contactPhone %>.
                 <% } %>
